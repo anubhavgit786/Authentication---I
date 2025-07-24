@@ -1,0 +1,56 @@
+package com.anubhav.security.services;
+
+import com.anubhav.security.dtos.ChangePasswordRequest;
+import com.anubhav.security.dtos.ChangePasswordResponse;
+import com.anubhav.security.models.User;
+import com.anubhav.security.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.security.Principal;
+
+@Service
+public class UserService implements UserDetailsService, IUserService
+{
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
+    {
+        return userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User with " + username + " not found." ));
+    }
+
+    @Override
+    public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser)
+    {
+        var user = ((User)((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal());
+
+        if(!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword()))
+        {
+            //throw Error Invalid Credentials
+            return  null;
+        }
+
+        if(!changePasswordRequest.getCurrentPassword().equals(changePasswordRequest.getConfirmationPassword()))
+        {
+            //throw Error Passwords do not match
+            return null;
+        }
+
+        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.save(user);
+
+        return ChangePasswordResponse.builder()
+                .message("Password changed successfully")
+                .build();
+    }
+}

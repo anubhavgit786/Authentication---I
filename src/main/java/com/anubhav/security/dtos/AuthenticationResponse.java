@@ -1,0 +1,18 @@
+package com.anubhav.security.dtos;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public class AuthenticationResponse
+{
+
+    private String accessToken;
+    private String refreshToken;
+    private boolean mfaEnabled;
+    private String secretImageUri;
+}
