@@ -76,7 +76,7 @@ public class AuthenticationService implements IAuthenticationService
                 .lastname(registerRequest.getLastname())
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .role(Role.USER)
+                .role(registerRequest.getRole())
                 .mfaEnabled(registerRequest.isMfaEnabled())
                 .build();
 

@@ -23,6 +23,7 @@ import static com.anubhav.security.models.Role.MANAGER;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration
 {
     @Autowired
